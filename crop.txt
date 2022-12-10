@@ -1,0 +1,22 @@
+820 pixels from the left
+370 from top
+
+
+ntegan@ideapad:~/2022_12_08_xmas_shop/optool$ echo $((1928 - 820))
+1108
+ntegan@ideapad:~/2022_12_08_xmas_shop/optool$ echo $((1208 - 370))
+838
+
+1928 x 1208
+
+
+Filtergraph 'crop=1108:838:820:370' was defined for video output stream 0:0 but codec copy was selected.
+Filtering and streamcopy cannot be used together.
+ntegan@ideapad:~/2022_12_08_xmas_shop/a$ ffmpeg -i in.mp4 -filter:v "crop=1108:838:820:370" -c copy out.mp4
+
+
+
+#ffmpeg -i input.mp4 -c copy -bsf:v h264_metadata=crop_left=100:crop_right=20:crop_top=10:crop_bottom=10 output.mp4
+
+ffmpeg -i in.mp4 -c copy -bsf:v hevc_metadata=crop_left=820:crop_right=0:crop_top=370:crop_bottom=0 out.mp4
+
