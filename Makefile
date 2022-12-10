@@ -32,8 +32,8 @@ vidupdate:
 		done \
 	done
 
-vidserver:$(webfs)
-	$(webfs) -h
+vidserver:$(webfs) $(DATA)
+	sudo $(webfs) -4 -F -p 80 -r $(DATA)
 
 clean:
 	$(RM) -r $(webfsdir)
