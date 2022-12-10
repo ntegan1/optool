@@ -6,6 +6,7 @@ route="$2"
 cam="$3"
 
 out_file_name="${route}--${cam}camera.mp4"
+test -f "${out_file_name}" && echo ${out_file_name} already exists && exit 0
 # ecam,dcam,or fcam
 test ${cam} = e -o ${cam} = d -o ${cam} = f
 
@@ -13,7 +14,8 @@ whereami="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
 include_dir="${whereami}/../include"
 source "${include_dir}/common.sh"
 
-concat_files="$(ls "${data_dir}" | grep "^${route}" | sort -V | sed -E 's/^(.*)$/'"${data_dir/\//\\\/}\/"'\1\/'"${cam}"'camera.hevc/g' | join '|')"
+dd_pad="$(echo "${data_dir}" | sed 's/\//\\\//g')"
+concat_files="$(ls "${data_dir}" | grep "^${route}" | sort -V | sed -E 's/^(.*)$/'"${dd_pad}\/"'\1\/'"${cam}"'camera.hevc/g' | join '|')"
 ffmpeg -f hevc -r 20 -i "concat:${concat_files}" -c copy -map 0 -vtag hvc1 -movflags +faststart "${out_file_name}"
 
 
