@@ -14,7 +14,7 @@ include_dir="${whereami}/../include"
 source "${include_dir}/common.sh"
 
 concat_files="$(ls "${data_dir}" | grep "^${route}" | sort -V | sed -E 's/^(.*)$/'"${data_dir/\//\\\/}\/"'\1\/'"${cam}"'camera.hevc/g' | join '|')"
-ffmpeg -f hevc -r 20 -i "concat:${concat_files}" -c copy -map 0 -vtag hvc1 "${out_file_name}"
+ffmpeg -f hevc -r 20 -i "concat:${concat_files}" -c copy -map 0 -vtag hvc1 -movflags +faststart "${out_file_name}"
 
 
 
