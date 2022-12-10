@@ -28,8 +28,6 @@ routes := $(shell bash -c "source $(ROOT)/env.sh >/dev/null 2>&1 ; lsroute $(REA
 vidupdate:
 	for route in $(routes); do \
 		for i in e d f; do \
-			echo r $$route $$i; \
-			echo ho; \
 			bash -c "source $(ROOT)/env.sh; cd $(DATA); camconcat $(REALDATA) $$route $$i"; \
 		done \
 	done
