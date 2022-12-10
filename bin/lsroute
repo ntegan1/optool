@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -euo pipefail
+
+whereami="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+include_dir="${whereami}/../include"
+source "${include_dir}/common.sh"
+
+function lssegs() {
+  ls ${DATA_DIR} | grep '^[0-9]' | grep -v '.*sh' | grep -v 'hevc' | grep -v mp4
+}
+function lsroutes() {
+  lssegs | sed -E 's/^(.*)--(.*)--(.*)$/\1--\2/g' | uniq
+}
+
+data_dir="$1"
+# or maybe ls -d */
+ls "${data_dir}" | get_routes | sort -V
