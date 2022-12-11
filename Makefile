@@ -6,11 +6,21 @@ DATA=/data/media/vids
 REALDATA ?= /data/media/0/realdata
 THIRD_PARTY=$(ROOT)/thirdparty
 
+nodejslink=https://nodejs.org/dist/v19.2.0/node-v19.2.0-linux-arm64.tar.xz
+nodejstxz=$(THIRD_PARTY)/node-v19.2.0-linux-arm64.tar.xz
+nodejsdir=$(THIRD_PARTY)/node-v19.2.0-linux-arm64
 webfstgz=$(THIRD_PARTY)/webfs-1.21.tar.gz
 webfsdir=$(THIRD_PARTY)/webfs-1.21/
 webfs=$(webfsdir)/webfsd
 
 all: $(webfs) $(DATA)
+
+$(nodejstxz):
+	(cd $(THIRD_PARTY); wget $(nodejslink))
+$(nodejsdir):$(nodejstxz)
+	(cd $(THIRD_PARTY); tar -xf $(nodejstxz))
+nodeget: $(nodejsdir)
+	$(RM) $(nodejstxz)
 
 $(DATA):
 	mkdir -p $(DATA)
@@ -37,3 +47,5 @@ vidserver:$(webfs) $(DATA)
 
 clean:
 	$(RM) -r $(webfsdir)
+	$(RM) $(nodejstxz)
+	$(RM) -r $(nodejsdir)
