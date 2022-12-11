@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -euo pipefail
+
+whereami="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+include_dir="${whereami}/../include"
+source "${include_dir}/common.sh"
+
+data_dir="$1"
+# or maybe ls -d */
+ls "${data_dir}" | get_segments | sort -V
