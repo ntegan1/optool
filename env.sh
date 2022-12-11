@@ -17,5 +17,7 @@ if test -d "${node_dir}"; then
   else
     echo nodejs bin_dir to PATH
     export PATH="${PATH}":"${node_dir}/bin"
+    export npm_config_cache=/data/media/.npm
+    mkdir -p ${npm_config_cache}
   fi
 fi
