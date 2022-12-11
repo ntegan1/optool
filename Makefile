@@ -1,16 +1,25 @@
 
-.PHONY: all clean vidserver vidupdate
+.PHONY: all clean vidserver vidupdate nodeget
 
 ROOT=$(CURDIR)
 DATA=/data/media/vids
 REALDATA ?= /data/media/0/realdata
 THIRD_PARTY=$(ROOT)/thirdparty
 
+nodejslink=https://nodejs.org/dist/v19.2.0/node-v19.2.0-linux-arm64.tar.xz
+nodejstxz=$(THIRD_PARTY)/node-v19.2.0-linux-arm64.tar.xz
+nodejsdir=$(THIRD_PARTY)/node-v19.2.0-linux-arm64
 webfstgz=$(THIRD_PARTY)/webfs-1.21.tar.gz
 webfsdir=$(THIRD_PARTY)/webfs-1.21/
 webfs=$(webfsdir)/webfsd
 
 all: $(webfs) $(DATA)
+
+$(nodejsdir):
+	(cd $(THIRD_PARTY); wget $(nodejslink))
+	(cd $(THIRD_PARTY); tar -xf $(nodejstxz))
+	$(RM) $(nodejstxz)
+nodeget:$(nodejsdir)
 
 $(DATA):
 	mkdir -p $(DATA)
@@ -37,3 +46,5 @@ vidserver:$(webfs) $(DATA)
 
 clean:
 	$(RM) -r $(webfsdir)
+	$(RM) $(nodejstxz)
+	$(RM) -r $(nodejsdir)
