@@ -1,5 +1,6 @@
 
-.PHONY: all clean vidserver vidupdate nodeget cleaner nginxget nginx
+.PHONY: all clean vidserver vidupdate nodeget cleaner nginxget nginx \
+	nginxrun nginxstop nginxreload nginxquit
 
 ROOT=$(CURDIR)
 DATA=/data/media/vids
@@ -28,10 +29,18 @@ $(nginxdir):
 nginxget:$(nginxdir)
 	(cd $(nginxdir); git clone $(nginxrtmplink))
 $(nginxexe):
-	(cd $(nginxdir); ./configure --with-http_ssl_module --with-http_v2_module --with-stream=dynamic --with-http_addition_module --with-http_mp4_module --add-module=nginx-rtmp-module; make -j2)
+	(cd $(nginxdir); ./configure --with-http_ssl_module --with-http_v2_module --with-stream=dynamic --with-http_addition_module --with-http_mp4_module --add-module=nginx-rtmp-module; make -j2; mkdir -p logs)
 
 nginx:$(nginxdir) $(nginxexe)
 
+nginxrun:
+	sudo $(nginxexe) -p $(nginxdir)
+nginxstop:
+	sudo $(nginxexe) -p $(nginxdir) -s quit
+nginxquit:
+	sudo $(nginxexe) -p $(nginxdir) -s quit
+nginxreload:
+	sudo $(nginxexe) -p $(nginxdir) -s reload
 
 $(nodejsdir):
 	(cd $(THIRD_PARTY); wget $(nodejslink))
