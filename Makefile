@@ -1,5 +1,5 @@
 
-.PHONY: all clean vidserver vidupdate
+.PHONY: all clean vidserver vidupdate nodeget
 
 ROOT=$(CURDIR)
 DATA=/data/media/vids
@@ -15,12 +15,11 @@ webfs=$(webfsdir)/webfsd
 
 all: $(webfs) $(DATA)
 
-$(nodejstxz):
+$(nodejsdir):
 	(cd $(THIRD_PARTY); wget $(nodejslink))
-$(nodejsdir):$(nodejstxz)
 	(cd $(THIRD_PARTY); tar -xf $(nodejstxz))
-nodeget: $(nodejsdir)
 	$(RM) $(nodejstxz)
+nodeget:$(nodejsdir)
 
 $(DATA):
 	mkdir -p $(DATA)
