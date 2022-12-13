@@ -1,6 +1,6 @@
 
 .PHONY: all clean vidserver vidupdate nodeget cleaner nginxget nginx \
-	nginxrun nginxstop nginxreload nginxquit socatget
+	nginxrun nginxstop nginxreload nginxquit socatget socat
 
 ROOT=$(CURDIR)
 DATA=/data/media/vids
@@ -10,6 +10,7 @@ THIRD_PARTY=$(ROOT)/thirdparty
 socatlink=http://www.dest-unreach.org/socat/download/socat-1.7.4.4.tar.gz
 socattgz=$(THIRD_PARTY)/socat-1.7.4.4.tar.gz
 socatdir=$(THIRD_PARTY)/socat-1.7.4.4
+socatexe=$(THIRD_PARTY)/socat-1.7.4.4/socat
 nginxlink=https://nginx.org/download/nginx-1.22.1.tar.gz
 nginxtgz=$(THIRD_PARTY)/nginx-1.22.1.tar.gz
 nginxdir=$(THIRD_PARTY)/nginx-1.22.1
@@ -25,10 +26,14 @@ webfs=$(webfsdir)/webfsd
 
 all: $(webfs) $(DATA)
 
+$(socatexe):
+	(cd $(socatdir); ./configure; make -j2;)
+socat:$(socatexe)
 $(socattgz):
 	(cd $(THIRD_PARTY); wget $(socatlink))
 $(socatdir):$(socattgz)
 	(cd $(THIRD_PARTY); tar -xf $(socattgz))
+	$(RM) $(socattgz)
 socatget:$(socatdir)
 
 $(nginxdir):
@@ -86,6 +91,8 @@ clean:
 	$(RM) -r $(nodejsdir)
 	$(RM) $(nginxtgz)
 	$(RM) -r $(nginxdir)
+	$(RM) $(socattgz)
+	$(RM) -r $(socatdir)
 
 cleaner: clean
 	$(RM) -r $(DATA)
