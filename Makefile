@@ -1,6 +1,6 @@
 
 .PHONY: all clean vidserver vidupdate nodeget cleaner nginxget nginx \
-	nginxrun nginxstop nginxreload nginxquit socat
+	nginxrun nginxstop nginxreload nginxquit socat nginxenableautoindex
 
 ROOT=$(CURDIR)
 DATA=/data/media/vids
@@ -12,6 +12,8 @@ socattgz=$(THIRD_PARTY)/socat-1.7.4.4.tar.gz
 socatdir=$(THIRD_PARTY)/socat-1.7.4.4
 socatexe=$(THIRD_PARTY)/socat-1.7.4.4/socat
 socatbin=$(THIRD_PARTY)/socat-1.7.4.4/bin/socat
+nginxenableautoindexreplaced=$(nginxconf)/.enableautoindex
+nginxautoindexconf=$(etcdir)/autoindex.conf
 nginxlink=https://nginx.org/download/nginx-1.22.1.tar.gz
 nginxtgz=$(THIRD_PARTY)/nginx-1.22.1.tar.gz
 nginxdir=$(THIRD_PARTY)/nginx-1.22.1
@@ -24,6 +26,8 @@ nodejsdir=$(THIRD_PARTY)/node-v19.2.0-linux-arm64
 webfstgz=$(THIRD_PARTY)/webfs-1.21.tar.gz
 webfsdir=$(THIRD_PARTY)/webfs-1.21/
 webfs=$(webfsdir)/webfsd
+etcdir=$(ROOT)/etc
+nginxconf=$(etcdir)/nginx
 
 all: $(webfs) $(DATA)
 
@@ -46,17 +50,24 @@ nginxget:$(nginxdir)
 	(cd $(nginxdir); git clone $(nginxrtmplink))
 $(nginxexe):
 	(cd $(nginxdir); ./configure --with-http_ssl_module --with-http_v2_module --with-stream=dynamic --with-http_addition_module --with-http_mp4_module --add-module=nginx-rtmp-module; make -j2; mkdir -p logs)
+$(nginxconf):$(nginxexe)
+	cp -r $(nginxdir)/conf $(nginxconf)
 
-nginx:$(nginxdir) $(nginxexe)
+nginx:$(nginxdir) $(nginxexe) $(nginxconf)
 
+nginxopts := -p $(nginxdir) -c $(etcdir)/nginx/nginx.conf
+$(nginxenableautoindexreplaced):
+	cp $(nginxautoindexconf) $(nginxconf)/nginx.conf
+	touch $(nginxenableautoindexreplaced)
+nginxenableautoindex: $(nginxenableautoindexreplaced)
 nginxrun:
-	sudo $(nginxexe) -p $(nginxdir)
+	sudo $(nginxexe) $(nginxopts)
 nginxstop:
-	sudo $(nginxexe) -p $(nginxdir) -s quit
+	sudo $(nginxexe) $(nginxopts) -s quit
 nginxquit:
-	sudo $(nginxexe) -p $(nginxdir) -s quit
+	sudo $(nginxexe) $(nginxopts) -s quit
 nginxreload:
-	sudo $(nginxexe) -p $(nginxdir) -s reload
+	sudo $(nginxexe) $(nginxopts) -s reload
 
 $(nodejsdir):
 	(cd $(THIRD_PARTY); wget $(nodejslink))
@@ -95,6 +106,7 @@ clean:
 	$(RM) -r $(nginxdir)
 	$(RM) $(socattgz)
 	$(RM) -r $(socatdir)
+	$(RM) -r $(nginxconf)
 
 cleaner: clean
 	$(RM) -r $(DATA)
