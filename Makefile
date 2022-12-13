@@ -26,14 +26,13 @@ webfs=$(webfsdir)/webfsd
 
 all: $(webfs) $(DATA)
 
-$(socatexe):
+$(socatexe):$(socatdir)
 	(cd $(socatdir); ./configure; make -j2;)
-socat:$(socatexe)
+socat:socatget $(socatexe)
 $(socattgz):
 	(cd $(THIRD_PARTY); wget $(socatlink))
 $(socatdir):$(socattgz)
 	(cd $(THIRD_PARTY); tar -xf $(socattgz))
-	$(RM) $(socattgz)
 socatget:$(socatdir)
 
 $(nginxdir):
