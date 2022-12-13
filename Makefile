@@ -24,6 +24,8 @@ nodejsdir=$(THIRD_PARTY)/node-v19.2.0-linux-arm64
 webfstgz=$(THIRD_PARTY)/webfs-1.21.tar.gz
 webfsdir=$(THIRD_PARTY)/webfs-1.21/
 webfs=$(webfsdir)/webfsd
+etcdir=$(ROOT)/etc
+nginxconf=$(etcdir)/nginx
 
 all: $(webfs) $(DATA)
 
@@ -46,17 +48,20 @@ nginxget:$(nginxdir)
 	(cd $(nginxdir); git clone $(nginxrtmplink))
 $(nginxexe):
 	(cd $(nginxdir); ./configure --with-http_ssl_module --with-http_v2_module --with-stream=dynamic --with-http_addition_module --with-http_mp4_module --add-module=nginx-rtmp-module; make -j2; mkdir -p logs)
+$(nginxconf):$(nginxexe)
+	cp -r $(nginxdir)/conf $(nginxconf)
 
-nginx:$(nginxdir) $(nginxexe)
+nginx:$(nginxdir) $(nginxexe) $(nginxconf)
 
+nginxopts := -p $(nginxdir) -c $(etcdir)/nginx/nginx.conf
 nginxrun:
-	sudo $(nginxexe) -p $(nginxdir)
+	sudo $(nginxexe) $(nginxopts)
 nginxstop:
-	sudo $(nginxexe) -p $(nginxdir) -s quit
+	sudo $(nginxexe) $(nginxopts) -s quit
 nginxquit:
-	sudo $(nginxexe) -p $(nginxdir) -s quit
+	sudo $(nginxexe) $(nginxopts) -s quit
 nginxreload:
-	sudo $(nginxexe) -p $(nginxdir) -s reload
+	sudo $(nginxexe) $(nginxopts) -s reload
 
 $(nodejsdir):
 	(cd $(THIRD_PARTY); wget $(nodejslink))
