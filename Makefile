@@ -1,6 +1,6 @@
 
 .PHONY: all clean vidserver vidupdate nodeget cleaner nginxget nginx \
-	nginxrun nginxstop nginxreload nginxquit socat
+	nginxrun nginxstop nginxreload nginxquit socat nginxenableautoindex
 
 ROOT=$(CURDIR)
 DATA=/data/media/vids
@@ -12,6 +12,8 @@ socattgz=$(THIRD_PARTY)/socat-1.7.4.4.tar.gz
 socatdir=$(THIRD_PARTY)/socat-1.7.4.4
 socatexe=$(THIRD_PARTY)/socat-1.7.4.4/socat
 socatbin=$(THIRD_PARTY)/socat-1.7.4.4/bin/socat
+nginxenableautoindexreplaced=$(nginxconf)/.enableautoindex
+nginxautoindexconf=$(nginxconf)/autoindex.conf
 nginxlink=https://nginx.org/download/nginx-1.22.1.tar.gz
 nginxtgz=$(THIRD_PARTY)/nginx-1.22.1.tar.gz
 nginxdir=$(THIRD_PARTY)/nginx-1.22.1
@@ -54,6 +56,10 @@ $(nginxconf):$(nginxexe)
 nginx:$(nginxdir) $(nginxexe) $(nginxconf)
 
 nginxopts := -p $(nginxdir) -c $(etcdir)/nginx/nginx.conf
+$(nginxenableautoindexreplaced):
+	cp $(nginxautoindexconf) $(nginxconf)/nginx.conf
+	touch $(nginxenableautoindexreplaced)
+nginxenableautoindex: $(nginxenableautoindexreplaced)
 nginxrun:
 	sudo $(nginxexe) $(nginxopts)
 nginxstop:
@@ -100,6 +106,7 @@ clean:
 	$(RM) -r $(nginxdir)
 	$(RM) $(socattgz)
 	$(RM) -r $(socatdir)
+	$(RM) -r $(nginxconf)
 
 cleaner: clean
 	$(RM) -r $(DATA)
