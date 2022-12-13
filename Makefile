@@ -9,6 +9,7 @@ THIRD_PARTY=$(ROOT)/thirdparty
 
 socatlink=http://www.dest-unreach.org/socat/download/socat-1.7.4.4.tar.gz
 socattgz=$(THIRD_PARTY)/socat-1.7.4.4.tar.gz
+socatdir=$(THIRD_PARTY)/socat-1.7.4.4
 nginxlink=https://nginx.org/download/nginx-1.22.1.tar.gz
 nginxtgz=$(THIRD_PARTY)/nginx-1.22.1.tar.gz
 nginxdir=$(THIRD_PARTY)/nginx-1.22.1
@@ -26,8 +27,9 @@ all: $(webfs) $(DATA)
 
 $(socattgz):
 	(cd $(THIRD_PARTY); wget $(socatlink))
-socatget:$(socattgz)
-	#(cd $(THIRD_PARTY); tar -xf $(nodejstxz))
+$(socatdir):$(socattgz)
+	(cd $(THIRD_PARTY); tar -xf $(socattgz))
+socatget:$(socatdir)
 
 $(nginxdir):
 	(cd $(THIRD_PARTY); wget $(nginxlink))
