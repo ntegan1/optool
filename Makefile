@@ -4,7 +4,10 @@
 
 ROOT=$(CURDIR)
 DATA=/data/media/vids
+DATA = $(CURDIR)/../vids
+REALDATA = $(CURDIR)/../data
 REALDATA ?= /data/media/0/realdata
+REALDATASED = $(subst /,\\/,$(REALDATA))
 THIRD_PARTY=$(ROOT)/thirdparty
 
 socatlink=http://www.dest-unreach.org/socat/download/socat-1.7.4.4.tar.gz
@@ -57,7 +60,7 @@ nginx:$(nginxdir) $(nginxexe) $(nginxconf)
 
 nginxopts := -p $(nginxdir) -c $(etcdir)/nginx/nginx.conf
 $(nginxenableautoindexreplaced):
-	cp $(nginxautoindexconf) $(nginxconf)/nginx.conf
+	sed "s/REALDATA/$(REALDATASED)/" $(nginxautoindexconf) > $(nginxconf)/nginx.conf
 	touch $(nginxenableautoindexreplaced)
 nginxenableautoindex: $(nginxenableautoindexreplaced)
 nginxrun:
