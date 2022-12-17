@@ -41,6 +41,8 @@ def segments_in_route(route):
   segments = [segment_name.time_str + "--" + str(segment_name.segment_num) for segment_name in segment_names]
   return segments
 
+
+#TODO move to util/ffmpeg.py
 def ffmpeg_mp4_concat_wrap_process_builder(file_list, cameratype, chunk_size=1024*512):
   command_line = ["ffmpeg"]
   if not cameratype == "qcamera":
