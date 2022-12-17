@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from layout.head import head
+from layout import site_page, site_page_with_nav
 from util.route import segments_in_route, all_routes, all_segment_names, segment_to_segment_name, is_valid_segment
 from util.ffmpeg import ffmpeg_mp4_concat_wrap_process_builder, ffmpeg_mp4_wrap_process_builder
 from flask import Flask, Response, request
@@ -48,8 +48,7 @@ def route(route):
   for segment in segments_in_route(ROOT, route):
     links += "<a href='"+route+"?"+segment.split("--")[2]+","+query_type+"'>"+segment+"</a><br>"
     segments += "'"+segment+"',"
-  return """<html>""" + head() + """
-  <body>
+  content = """
     <video id="video" width="320" height="240" controls autoplay="autoplay" style="background:black">
     </video>
     <br><br>
@@ -66,8 +65,8 @@ def route(route):
     <a href=\""""+route+"""?0,dcamera\">dcamera</a> -
     <a href=\""""+route+"""?0,ecamera\">ecamera</a>
     <br><br>
-    """+links+"""
-  </body>
+    """+links
+  scripts="""
     <script>
     var video = document.getElementById('video');
     var tracks = {
@@ -95,15 +94,15 @@ def route(route):
     document.getElementById("currentsegment").textContent=video.src.split("/")[4];
     document.getElementById("currentview").textContent=video.src.split("/")[3];
     </script>
-</html>
 """
+  return site_page_with_nav("", content, scripts=scripts)
 
 @app.route("/")
 def index():
   result = ""
   for route in all_routes(ROOT):
     result += "<a href='"+route+"'>"+route+"</a><br>"
-  return result
+  return site_page_with_nav("/", result)
 
 def main():
   app.run(host="0.0.0.0", port="8081")
