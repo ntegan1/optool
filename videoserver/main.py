@@ -49,8 +49,12 @@ def route(route):
     links += "<a href='"+route+"?"+segment.split("--")[2]+","+query_type+"'>"+segment+"</a><br>"
     segments += "'"+segment+"',"
   content = """
-    <video id="video" width="320" height="240" controls autoplay="autoplay" style="background:black">
-    </video>
+    <div class="flex w-full h-full">
+      <video id="video" class="bg-nord1 w-fit h-fit" width="320" height="240" controls autoplay="autoplay">
+      </video>
+      <div id="drag" class="draggable w-64 h-64 m-8 bg-nord10">
+      </div>
+    </div>
     <br><br>
     current segment: <span id="currentsegment"></span>
     <br>
@@ -68,6 +72,8 @@ def route(route):
     """+links
   scripts="""
     <script>
+    document.getElementById('drag').DraggableJS();
+    document.getElementById('video').DraggableJS();
     var video = document.getElementById('video');
     var tracks = {
       list: ["""+segments+"""],
