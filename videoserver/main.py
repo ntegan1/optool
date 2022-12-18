@@ -97,6 +97,26 @@ def route(route):
 """
   return site_page_with_nav("", content, scripts=scripts)
 
+@app.route("/public", methods=["GET"])
+def public():
+  args = request.args
+  dongle = args.get("dongle")
+  inputclass="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+  result = ""
+  result += """
+    <div class="mt-4 ml-4 bg-nord1 p-2 text-nord5 w-fit">
+      <h1 class="text-2xl">Public Dongle Search</h1>
+      <form action="/public" method="GET">
+        <label for="dongle">DongleID</label><br>
+        <input name="dongle" title="DongleID is 16 characters" placeholder="ffffaaaabbbbcccc" id="dongle" type="text" class="placeholder:text-nord8 bg-nord3" maxlength="16" pattern="[a-fA-F0-9]{16}" required>
+        </input>
+        <button type="submit">submit</button>
+      </form>
+      <h4 class="text-md">e.g. 0def4a390f6fe5c0</h4>
+    </div>
+  """
+  return site_page_with_nav("/public", result)
+
 @app.route("/")
 def index():
   result = ""

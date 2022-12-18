@@ -12,6 +12,7 @@ def navlink(to, name, active):
 def nav(page_name):
   links = [
     ["/", "Home"],
+    ["/public", "Public"],
   ]
   navleft = ""
   navleft += """<div class="flex items-center">
