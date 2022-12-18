@@ -1,12 +1,15 @@
 
-.PHONY: all clean vidserver vidupdate nodeget cleaner nginxget nginx \
-	nginxrun nginxstop nginxreload nginxquit socat nginxenableautoindex
+.PHONY: all videoserver clean nodeget cleaner nginxget nginx \
+	nginxrun nginxstop nginxreload nginxquit socat nginxenableautoindex nmvs
 
+OPDIR=$(CURDIR)/../
 ROOT=$(CURDIR)
-DATA=/data/media/vids
+DATA=$(ROOT)/data
 REALDATA ?= /data/media/0/realdata
 THIRD_PARTY=$(ROOT)/thirdparty
 
+# TODO refactor into make includes and clean directory tree
+#  and less duplication of version strings etc
 socatlink=http://www.dest-unreach.org/socat/download/socat-1.7.4.4.tar.gz
 socattgz=$(THIRD_PARTY)/socat-1.7.4.4.tar.gz
 socatdir=$(THIRD_PARTY)/socat-1.7.4.4
@@ -29,7 +32,7 @@ webfs=$(webfsdir)/webfsd
 etcdir=$(ROOT)/etc
 nginxconf=$(etcdir)/nginx
 
-all: $(webfs) $(DATA)
+all: $(DATA)
 
 $(socatexe):$(socattgz)
 	(cd $(THIRD_PARTY); tar -xf $(socattgz))
@@ -75,28 +78,17 @@ $(nodejsdir):
 	$(RM) $(nodejstxz)
 nodeget:$(nodejsdir)
 
+videoserver:
+	PYTHONPATH=$(OPDIR) poetry run ./videoserver/main.py
+
+# nodemon video server
+nmvs:
+	 npx nodemon -e py -w videoserver -x "make videoserver"
+
 $(DATA):
 	mkdir -p $(DATA)
 
-$(webfsdir):$(webfstgz)
-	tar -xzf $(webfstgz) -C $(THIRD_PARTY)
-
-$(webfs):$(webfsdir)
-	echo ok
-	make -C $(webfsdir) config
-	bash -c 'sed -iE '"'"'s/^-e \(LIB.*\)$$/\1/'"'"' $(webfsdir)/Make.config'
-	make -C $(webfsdir)
-
-routes := $(shell bash -c "source $(ROOT)/env.sh >/dev/null 2>&1 ; lsroute $(REALDATA)")
-vidupdate:
-	for route in $(routes); do \
-		for i in e d f; do \
-			bash -c "source $(ROOT)/env.sh; cd $(DATA); camconcat $(REALDATA) $$route $$i"; \
-		done \
-	done
-
-vidserver:$(webfs) $(DATA)
-	sudo $(webfs) -4 -F -p 80 -r $(DATA)
+#routes := $(shell bash -c "source $(ROOT)/env.sh >/dev/null 2>&1 ; lsroute $(REALDATA)")
 
 clean:
 	$(RM) -r $(webfsdir)
