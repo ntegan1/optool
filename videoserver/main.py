@@ -3,7 +3,7 @@
 from layout import site_page, site_page_with_nav
 from util.route import segments_in_route, all_routes, all_segment_names, segment_to_segment_name, is_valid_segment
 from util.capi import Dongle
-from util.ffmpeg import ffmpeg_mp4_concat_wrap_process_builder, ffmpeg_mp4_wrap_process_builder
+from util.ffmpeg import ffmpeg_mp4_concat_wrap_process_builder, ffmpeg_mp4_wrap_process_builder, ffmpeg_mp4_concat_wrap_process_builder_http
 from flask import Flask, Response, request
 #from selfdrive.loggerd.config import ROOT
 
@@ -101,15 +101,14 @@ def route(route):
 @app.route("/public/<dongle>/<route>")
 def publicdongleroute(dongle, route):
   # return qcams
-  #chunk_size = 1024 * 512 # 5KiB
-  #file_name = cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
-  #vidlist = "|".join(ROOT + "/" + segment + "/" + file_name for segment in segments_in_route(ROOT, route))
-  #def generate_buffered_stream():
-  #  with ffmpeg_mp4_concat_wrap_process_builder(vidlist, cameratype, chunk_size) as process:
-  #    for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
-  #      yield bytes(chunk)
-  #return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
-  return ""
+  urls = Dongle(dongle).list_files(route)["qcameras"]
+  chunk_size = 1024 * 512 # 5KiB
+  vidlist = "|".join(urls)
+  def generate_buffered_stream():
+    with ffmpeg_mp4_concat_wrap_process_builder_http(vidlist, "qcamera", chunk_size) as process:
+      for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
+        yield bytes(chunk)
+  return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
 @app.route("/public", methods=["GET"])
 def public():
   args = request.args
