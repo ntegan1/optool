@@ -2,17 +2,17 @@
 
 from layout import site_page, site_page_with_nav
 from util.route import segments_in_route, all_routes, all_segment_names, segment_to_segment_name, is_valid_segment
-from util.ffmpeg import ffmpeg_mp4_concat_wrap_process_builder, ffmpeg_mp4_wrap_process_builder, unsupported_browser_ffmpeg_mp4_wrap_process_builder_speedup
+from util.ffmpeg import ffmpeg_mp4_concat_wrap_process_builder, ffmpeg_mp4_wrap_process_builder
 from flask import Flask, Response, request
 #from selfdrive.loggerd.config import ROOT
 
 ROOT = "/home/ntegan/2022_11_22_tomtp/"
-chunk_size = 1024 * 512 # 5KiB
 
 app = Flask(__name__,)
 
 @app.route("/full/<cameratype>/<route>")
 def full(cameratype, route):
+  chunk_size = 1024 * 512 # 5KiB
   #if not is_valid_route(route):
   #  return "invalid route"
   file_name = cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
@@ -29,13 +29,7 @@ def fcamera(cameratype, segment):
     return "invalid segment"
   file_name = ROOT + "/" + segment + "/" + cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
 
-  def generate_buffered_stream():
-    c = chunk_size
-    c = 1024 * 32
-    with unsupported_browser_ffmpeg_mp4_wrap_process_builder_speedup(file_name, 4, chunk_size=c) as process:
-      for chunk in iter(lambda: process.stdout.read(1024 * 32), b""):
-        yield bytes(chunk)
-  return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
+  return Response(ffmpeg_mp4_wrap_process_builder(file_name).stdout.read(), status=200, mimetype='video/mp4')
 
 @app.route("/<route>")
 def route(route):
