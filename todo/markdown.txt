@@ -1,0 +1,8 @@
+# textual python markdown browser
+https://news.ycombinator.com/item?id=34028765
+
+# teddit nitter invidious
+https://github.com/zedeus/nitter
+
+# sourcehut
+https://man.sr.ht/configuration.md
