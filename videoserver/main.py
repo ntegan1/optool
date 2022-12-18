@@ -2,6 +2,7 @@
 
 from layout import site_page, site_page_with_nav
 from util.route import segments_in_route, all_routes, all_segment_names, segment_to_segment_name, is_valid_segment
+from util.capi import Dongle
 from util.ffmpeg import ffmpeg_mp4_concat_wrap_process_builder, ffmpeg_mp4_wrap_process_builder
 from flask import Flask, Response, request
 #from selfdrive.loggerd.config import ROOT
@@ -97,11 +98,36 @@ def route(route):
 """
   return site_page_with_nav("", content, scripts=scripts)
 
+@app.route("/public/<dongle>/<route>")
+def publicdongleroute(dongle, route):
+  # return qcams
+  #chunk_size = 1024 * 512 # 5KiB
+  #file_name = cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
+  #vidlist = "|".join(ROOT + "/" + segment + "/" + file_name for segment in segments_in_route(ROOT, route))
+  #def generate_buffered_stream():
+  #  with ffmpeg_mp4_concat_wrap_process_builder(vidlist, cameratype, chunk_size) as process:
+  #    for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
+  #      yield bytes(chunk)
+  #return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
+  return ""
 @app.route("/public", methods=["GET"])
 def public():
   args = request.args
   dongle = args.get("dongle")
   inputclass="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+
+  routelinks = ""
+  if dongle is not None:
+    try:
+      d = Dongle(dongle)
+      for r in d.list_routes():
+        link = "/public/" + dongle + "/" + r
+        routelinks += """
+          <a href=""" + '"' + link + '"' + ">" + r + """</a><br>
+        """
+    except:
+      pass
+    
   result = ""
   result += """
     <div class="mt-4 ml-4 bg-nord1 p-2 text-nord5 w-fit">
@@ -113,6 +139,9 @@ def public():
         <button type="submit">submit</button>
       </form>
       <h4 class="text-md">e.g. 0def4a390f6fe5c0</h4>
+      <br><br>
+      <h1 class="text-lg font-bold">Routes</h1>
+      """ + routelinks + """
     </div>
   """
   return site_page_with_nav("/public", result)
