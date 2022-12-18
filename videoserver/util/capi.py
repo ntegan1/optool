@@ -22,11 +22,14 @@ def from_date(from_datetime=None):
   #}
 
 def comma_request(path):
-  jwt = ""
+  jwtenv = os.environ.get("jwt")
+  jwt = "" if jwtenv is None else jwtenv
   url = "https://api.commadotai.com/"
   #curl 2>/dev/null -L -H "Authorization: JWT ${jwt}" ${url}/${endpoint}
-  headers = {"Authorization": "JWT " + jwt}
-  headers = {'user-agent': 'agnos/0.9.1'}
+  headers = {
+    "Authorization": "JWT " + jwt,
+    'user-agent': 'agnos/0.9.1',
+  }
   r = requests.get(url + path, headers=headers)
   return r.json() if r.status_code == 200 else None
 

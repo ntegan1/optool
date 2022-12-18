@@ -1,6 +1,6 @@
 
 .PHONY: all videoserver clean nodeget cleaner nginxget nginx \
-	nginxrun nginxstop nginxreload nginxquit socat nginxenableautoindex
+	nginxrun nginxstop nginxreload nginxquit socat nginxenableautoindex nmvs
 
 OPDIR=$(CURDIR)/../
 ROOT=$(CURDIR)
@@ -80,6 +80,10 @@ nodeget:$(nodejsdir)
 
 videoserver:
 	PYTHONPATH=$(OPDIR) poetry run ./videoserver/main.py
+
+# nodemon video server
+nmvs:
+	 npx nodemon -e py -w videoserver -x "make videoserver"
 
 $(DATA):
 	mkdir -p $(DATA)

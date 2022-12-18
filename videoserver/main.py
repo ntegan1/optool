@@ -109,6 +109,18 @@ def publicdongleroute(dongle, route):
       for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
         yield bytes(chunk)
   return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
+@app.route("/public/<dongle>/<route>/<cameraletter>")
+def publicdongleroutehevc(dongle, route, cameraletter):
+  fileskey = "" if cameraletter == "f" else cameraletter
+  fileskey += "cameras"
+  urls = Dongle(dongle).list_files(route)[fileskey]
+  chunk_size = 1024 * 512 # 5KiB
+  vidlist = "|".join(urls)
+  def generate_buffered_stream():
+    with ffmpeg_mp4_concat_wrap_process_builder_http(vidlist, cameraletter + "camera", chunk_size) as process:
+      for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
+        yield bytes(chunk)
+  return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
 @app.route("/public", methods=["GET"])
 def public():
   args = request.args
@@ -119,11 +131,16 @@ def public():
   if dongle is not None:
     try:
       d = Dongle(dongle)
-      for r in d.list_routes():
+      routes = d.list_routes()
+      routes.sort()
+      for r in routes:
         link = "/public/" + dongle + "/" + r
-        routelinks += """
-          <a href=""" + '"' + link + '"' + ">" + r + """</a><br>
-        """
+        routelinks += """<span>""" + r + """</span>   """
+        routelinks += """<a download=""" + '"' + dongle + "_" + r + "-qcamera.mp4" + '" ' + """href=""" + '"' + link + '"' + ">q</a>  "
+        routelinks += """<a download=""" + '"' + dongle + "_" + r + "-fcamera.mp4" + '" ' + """href=""" + '"' + link + '/f"' + ">f</a>  "
+        routelinks += """<a download=""" + '"' + dongle + "_" + r + "-ecamera.mp4" + '" ' + """href=""" + '"' + link + '/e"' + ">e</a>  "
+        routelinks += """<a download=""" + '"' + dongle + "_" + r + "-dcamera.mp4" + '" ' + """href=""" + '"' + link + '/d"' + ">d</a><br>"
+        continue
     except:
       pass
     
@@ -137,7 +154,6 @@ def public():
         </input>
         <button type="submit">submit</button>
       </form>
-      <h4 class="text-md">e.g. 0def4a390f6fe5c0</h4>
       <br><br>
       <h1 class="text-lg font-bold">Routes</h1>
       """ + routelinks + """
