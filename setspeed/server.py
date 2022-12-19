@@ -5,11 +5,14 @@ import threading
 from flask import Flask, send_from_directory, Response
 #from opsetspeed.shminject import Mem
 mydir = os.path.dirname(os.path.abspath(__file__)) 
+from optool.opsetspeed.controller import Server
 
 build_dir = mydir + "/app/build"
 static_dir=build_dir + "/static"
 allowed_build = ["asset-manifest.json", "favicon.ico", "logo192.png", "logo512.png", "robots.txt"]
 app = Flask(__name__, static_folder=static_dir)
+s = Server()
+s.reset()
 
 #mem = Mem()
 
@@ -25,13 +28,14 @@ def c():
   return response
 
 last_send_time = time.monotonic()
-@app.route("/control/<y>")
-def control(y):
+@app.route("/control/<y>/<a>")
+def control(y, a):
   global last_send_time
   y = int(y)
-  #if y >= 0 and y <= vmax:
-    #mem.set(y)
-  last_send_time = time.monotonic()
+  a = int(a)
+  if s.update(y, a):
+    last_send_time = time.monotonic()
+
   response = Response("", status=200,)
   response.headers.add('Access-Control-Allow-Origin', '*')
   return response
@@ -52,6 +56,7 @@ def handle_timeout():
     if (last_send_time+1.1) < this_time:
       #mem.set(vmax)
       #print("timeout, no web in %.2f s" % (this_time-last_send_time))
+      s.reset()
       pass
     time.sleep(0.1)
 
