@@ -21,8 +21,10 @@ function useInterval(callback, delay) {
 }
 
 function Slider() {
-  const url = ""
+  //const url = ""
   //const url = "http://192.168.1.122:5000"
+  //const url = "http://127.0.0.1:5000"
+  const url = "http://192.168.1.180:5000"
   const vmin = 0
   const vmax = 28
   const sendingDelay = 200
@@ -115,7 +117,7 @@ function Slider() {
       <div className="h-[300px] w-[32px] mt-4">
         <input type="range" step="1" onChange={onchange} value={value} min={vmin} max={vmax} className={c} />
       </div>
-      <p className="text-xl font-bold mt-2">{value}</p>
+      <p className="pl-3 text-xl font-bold mt-2">{value} <span className="text-sm font-medium">mph</span></p>
       <button onClick={onclick} className={"font-bold mt-4 w-64 h-24 rounded-3xl" + ((value === vmax) ? " bg-nord8 " : " bg-nord6 ")}>
         <p className="text-nord1 text-2xl">reset</p>
       </button>
