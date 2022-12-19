@@ -15,11 +15,11 @@ export default function Root() {
 
 function Sliders() {
   const c = "[&::-webkit-slider-thumb]:bg-nord8 [&::-webkit-slider-thumb]:w-12 [&::-webkit-slider-thumb]:h-12 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:[appearance:none] [&::-webkit-slider-thumb]:[-webkit-appearance:none] [-webkit-user-select:none] -translate-x-[134px] translate-y-[134px] -rotate-90 h-[32px] w-[300px] bg-gray-700 rounded-lg appearance-none cursor-pointer "
-  //const url = ""
+  const url = ""
   //const url = "http://192.168.1.122:5000"
   //const url = "http://127.0.0.1:5000"
   //const url = "http://192.168.1.180:5000"
-  const url = "http://192.168.8.175:5000"
+  //const url = "http://192.168.8.175:5000"
   const vmin = 0
   const vmax = 28
   const amin = 0
