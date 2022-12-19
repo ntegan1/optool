@@ -10,7 +10,7 @@ export default function Root() {
     <>
       <div className="h-screen w-screen">
         <Nav />
-        <div className="flex justify-between mx-4">
+        <div className="flex justify-between mx-8">
         <div className="h-[300px] w-[32px] mt-4">
           <input onMouseUp={f} onTouchEnd={f} type="range" defaultValue="0" min="-100" max="100" className={c} />
         </div>
