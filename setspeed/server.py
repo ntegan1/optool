@@ -3,9 +3,8 @@ import os
 import time
 import threading
 from flask import Flask, send_from_directory, Response
-#from opsetspeed.shminject import Mem
 mydir = os.path.dirname(os.path.abspath(__file__)) 
-from optool.opsetspeed.controller import Server
+from optool.setspeed.controller import Server
 
 build_dir = mydir + "/app/build"
 static_dir=build_dir + "/static"
