@@ -1,25 +1,7 @@
 #!/usr/bin/env python3
 
-from common.conversions import Conversions as CV
 from multiprocessing import shared_memory
 import atexit
-
-class Hook:
-  def overriding(self):
-    return self.mem.overriding()
-  def update(self, v_cruise_mps):
-    vmaxmps = 28.5
-    if v_cruise_mps * CV.MS_TO_MPH > vmaxmps:
-      return v_cruise_mps
-
-    vmph = self.mem.get()
-    if vmph <= v_cruise_mps:
-      vmps = vmph * CV.MPH_TO_MS
-      return vmps
-    return v_cruise_mps
-  def __init__(self, autounlink=True):
-    self.mem = Mem(autounlink=autounlink)
-    self.mem.set(28)
 
 class Mem:
   __mem = None
