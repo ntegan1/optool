@@ -3,15 +3,15 @@ import os
 import time
 import threading
 from flask import Flask, send_from_directory, Response
-from opsetspeed.shminject import Mem
+#from opsetspeed.shminject import Mem
+mydir = os.path.dirname(os.path.abspath(__file__)) 
 
-build_dir="/data/openpilot/opsetspeed/build"
+build_dir = mydir + "/app/build"
 static_dir=build_dir + "/static"
 allowed_build = ["asset-manifest.json", "favicon.ico", "logo192.png", "logo512.png", "robots.txt"]
 app = Flask(__name__, static_folder=static_dir)
 
-mem = Mem()
-vmax = 28
+#mem = Mem()
 
 @app.route("/")
 def a():
@@ -29,9 +29,9 @@ last_send_time = time.monotonic()
 def control(y):
   global last_send_time
   y = int(y)
-  if y >= 0 and y <= vmax:
-    mem.set(y)
-    last_send_time = time.monotonic()
+  #if y >= 0 and y <= vmax:
+    #mem.set(y)
+  last_send_time = time.monotonic()
   response = Response("", status=200,)
   response.headers.add('Access-Control-Allow-Origin', '*')
   return response
@@ -50,8 +50,9 @@ def handle_timeout():
   while 1:
     this_time = time.monotonic()
     if (last_send_time+1.1) < this_time:
-      mem.set(vmax)
+      #mem.set(vmax)
       #print("timeout, no web in %.2f s" % (this_time-last_send_time))
+      pass
     time.sleep(0.1)
 
 def main():
