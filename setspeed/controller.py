@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from .mem import Mem
+import atexit
 
 ## server.py
 # gets a speed (0 to 28)
@@ -46,8 +47,12 @@ class Server:
     state = bytearray([28, 100, 0, 0])
     self.__mem.set(state)
     self.lastisactive = False
+  def __cleanup(self):
+    self.__mem.cleanup()
   def __init__(self):
     self.__mem = Mem(mem_name, mem_size, create=True)
+    atexit.register(self.__cleanup)
+
 class Client:
   state = None
   def get_newlyactive(self):
@@ -71,9 +76,12 @@ class Client:
     return self.get_speed() < 28
   def update(self):
     self.state = self.__mem.get()
+  def __cleanup(self):
+    self.__mem.cleanup()
   def __init__(self):
     self.__mem = Mem(mem_name, mem_size, create=False)
     self.state = self.__mem.get()
+    atexit.register(self.__cleanup)
     # update function to read all mem at once,
     # 
     # isnewOverride so can reset LoC??? / pid?
