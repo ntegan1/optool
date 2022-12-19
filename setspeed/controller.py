@@ -40,7 +40,13 @@ class Server:
     newlyactive = isactive and not self.lastisactive
     self.lastisactive = isactive
 
-    self.__mem.setbytes(0, 3, bytearray([speed, accel, newlyactive]))
+    if isactive:
+      if newlyactive:
+        self.__mem.setbytes(0, 3, bytearray([speed, accel, 1]))
+      else:
+        self.__mem.setbytes(0, 2, bytearray([speed, accel]))
+    else:
+      self.__mem.setbytes(0, 2, bytearray([28, 100]))
     return isactive
   def reset(self):
     """reset when server.py timeout"""
@@ -60,7 +66,7 @@ class Client:
        or maybe moreso to itself"""
     yes = bool(self.state[2])
     if yes:
-      self.__mem.set(2, 1, bytearray([0]))
+      self.__mem.setbytes(2, 1, bytearray([0]))
       self.state[2] = 0
 
     return yes
