@@ -5,8 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import Root from './routes/root';
+import Maneuver from './routes/maneuver';
 import ErrorPage from './error-page-route'
-import Routes, {loader as routesLoader} from './routes/routes';
 
 import {
   createBrowserRouter,
@@ -27,9 +27,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/routes",
-    element: <Routes />,
-    loader: routesLoader,
+    path: "/maneuver",
+    element: <Maneuver />,
     errorElement: <ErrorPage />,
   },
 ]);
