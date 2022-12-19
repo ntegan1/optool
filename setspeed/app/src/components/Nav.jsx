@@ -9,7 +9,6 @@ export default function Nav() {
       <div className="flex items-center">
       <NavLink to="/" className={clink}>Home</NavLink>
       <NavLink to="/maneuver" className={clink}>Maneuver</NavLink>
-      <NavLink to="/setspeed" className={clink}>Set Speed</NavLink>
       </div>
     </div>
   )

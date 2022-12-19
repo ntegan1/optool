@@ -98,28 +98,33 @@ function Sliders() {
   }, [])
   if (!serverRunning)
     return (
-      <>
+      <div className="flex flex-col items-center justify-center mt-4">
         <button className={"font-bold mt-4 w-64 h-24 rounded-3xl bg-nord11"}>
           <p className="text-nord1 text-2xl">Waiting for Server</p>
         </button>
-      </>
+      </div>
     )
   return (
     <>
       <div className="flex justify-between mx-8 mb-2">
-        <div className="h-[300px] w-[32px] mt-4">
-          <input onMouseUp={onreleaseA} onTouchEnd={onreleaseA} type="range" onChange={onchangeA} value={valueA} min={amin} max={amax} className={c} />
+        <div className="flex flex-col items-start">
+          <div className="h-[300px] w-[32px] mt-4">
+            <input onMouseUp={onreleaseA} step="1" onTouchEnd={onreleaseA} type="range" onChange={onchangeA} value={valueA} min={amin} max={amax} className={c} />
+          </div>
+          <p className="pl-3 text-xl font-bold mt-2 text-nord5">{valueA - 100} <span className="text-sm font-medium text-nord5">%</span></p>
         </div>
-        <div>
+        <div className="flex flex-col items-end">
           <div className="h-[300px] w-[32px] mt-4">
             <input type="range" step="1" onChange={onchange} value={value} min={vmin} max={vmax} className={c} />
           </div>
           <p className="pl-3 text-xl font-bold mt-2 text-nord5">{value} <span className="text-sm font-medium text-nord5">mph</span></p>
         </div>
       </div>
-      <button onClick={onclick} className={"font-bold mt-4 w-64 h-24 rounded-3xl" + ((value === vmax) ? " bg-nord8 " : " bg-nord6 ")}>
-        <p className="text-nord1 text-2xl">reset</p>
-      </button>
+      <div className="flex flex-col items-center mt-8">
+        <button onClick={onclick} className={"font-bold w-64 h-24 rounded-3xl" + ((value === vmax) ? " bg-nord8 " : " bg-nord6 ")}>
+          <p className="text-nord1 text-2xl">reset</p>
+        </button>
+      </div>
     </>
   )
 }
