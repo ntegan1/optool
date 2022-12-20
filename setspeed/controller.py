@@ -75,7 +75,7 @@ class Client:
   def get_accel(self, accel_min, accel_max):
     accel = self.state[1]
     if accel >= 100:
-      return (float(200 - accel) / 100.) * accel_max
+      return (float(accel - 100) / 100.) * accel_max
     else:
       return (float(100 - accel) / 100.) * accel_min
   def get_isactive(self):
