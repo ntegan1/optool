@@ -5,17 +5,31 @@ data_dir="$1"
 route="$2"
 cam="$3"
 
-out_file_name="${route}--${cam}camera.mp4"
-test -f "${out_file_name}" && echo ${out_file_name} already exists && exit 0
-# ecam,dcam,or fcam
-test ${cam} = e -o ${cam} = d -o ${cam} = f
-
 whereami="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
 include_dir="${whereami}/../include"
 source "${include_dir}/common.sh"
+# ecam,dcam,or fcam or rlog
+test ${cam} = e -o ${cam} = d -o ${cam} = f -o ${cam} = r
+if test ${cam} = r; then
+  out_file_name="${route}--rlog.bz2"
+  test -f "${out_file_name}" && echo ${out_file_name} already exists && exit 0
+  concat_dirs=($(ls "${data_dir}" | grep "^${route}" | sort -V))
+  for dir in ${concat_dirs[@]}; do
+    cat ${data_dir}/${dir}/rlog
+  done | bzip2 - > ${out_file_name}
+  exit 0
+
+
+
+fi
+out_file_name="${route}--${cam}camera.mp4"
+test -f "${out_file_name}" && echo ${out_file_name} already exists && exit 0
+
 
 dd_pad="$(echo "${data_dir}" | sed 's/\//\\\//g')"
-concat_files="$(ls "${data_dir}" | grep "^${route}" | sort -V | sed -E 's/^(.*)$/'"${dd_pad}\/"'\1\/'"${cam}"'camera.hevc/g' | join '|')"
+dirs=($(ls "${data_dir}" | grep "^${route}" | sort -V))
+dirsskip=($(for dir in ${dirs[@]}; do test -f ${data_dir}/${dir}/${cam}camera.hevc || continue; echo ${dir}; done))
+concat_files="$(for dir in ${dirsskip[@]}; do echo ${dir}; done |  sed -E 's/^(.*)$/'"${dd_pad}\/"'\1\/'"${cam}"'camera.hevc/g' | join '|')"
 ffmpeg -f hevc -r 20 -i "concat:${concat_files}" -c copy -map 0 -vtag hvc1 -movflags +faststart "${out_file_name}"
 
 
