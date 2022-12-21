@@ -9,7 +9,7 @@ whereami="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
 include_dir="${whereami}/../include"
 source "${include_dir}/common.sh"
 # ecam,dcam,or fcam or rlog
-test ${cam} = e -o ${cam} = d -o ${cam} = f -o ${cam} = r
+test ${cam} = e -o ${cam} = d -o ${cam} = f -o ${cam} = r -o ${cam} = q
 if test ${cam} = r; then
   out_file_name="${route}--rlog.bz2"
   test -f "${out_file_name}" && echo ${out_file_name} already exists && exit 0
@@ -18,6 +18,24 @@ if test ${cam} = r; then
     cat ${data_dir}/${dir}/rlog
   done | bzip2 - > ${out_file_name}
   exit 0
+
+
+
+fi
+if test ${cam} = q; then
+  out_file_name="${route}--${cam}camera.mp4"
+  test -f "${out_file_name}" && echo ${out_file_name} already exists && exit 0
+
+
+  dd_pad="$(echo "${data_dir}" | sed 's/\//\\\//g')"
+  dirs=($(ls "${data_dir}" | grep "^${route}" | sort -V))
+  dirsskip=($(for dir in ${dirs[@]}; do test -f ${data_dir}/${dir}/${cam}camera.hevc || continue; echo ${dir}; done))
+  concat_files="$(for dir in ${dirsskip[@]}; do echo ${dir}; done |  sed -E 's/^(.*)$/'"${dd_pad}\/"'\1\/'"${cam}"'camera.ts/g' | join '|')"
+  ffmpeg -r 20 -i "concat:${concat_files}" -c copy -map 0 -movflags +faststart "${out_file_name}"
+
+
+  exit 0
+
 
 
 
